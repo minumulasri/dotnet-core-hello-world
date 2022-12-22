@@ -1,0 +1,31 @@
+name: API workflow
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'    
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+
+jobs:
+  build:
+    name: Build API
+    runs-on: ubuntu-latest
+    env:
+      working-directory: './src/api'
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+    - name: Restore dependencies
+      run: dotnet restore API.sln
+      working-directory: ${{env.working-directory}}
+    - run: dotnet build --no-restore
+      working-directory: ${{env.working-directory}}    
+    - run: dotnet test --no-build --verbosity normal
+      working-directory: ${{env.working-directory}}
+  
